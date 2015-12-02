@@ -2,7 +2,7 @@
 IRC Standup Bot
 ===============
 
-This is a script to conduct IRC standups.
+A simple script to provide automated cat herding for IRC-based standups.
 
 ------------
 Installation
