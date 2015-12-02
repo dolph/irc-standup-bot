@@ -51,7 +51,7 @@ class StandupBot(irc.client.SimpleIRCClient):
         connection.names(self.channel)
 
         # Disconnect after 15 minutes.
-        connection.execute_delayed(delay=15, function=connection.quit)
+        connection.execute_delayed(delay=60 * 15, function=connection.quit)
 
     def on_disconnect(self, connection, event):
         """Exit cleanly."""
@@ -75,9 +75,6 @@ class StandupBot(irc.client.SimpleIRCClient):
         # Build a pretty ping message.
         comma_separated_names = ', '.join(sorted(list_of_names))
         message = '%s: standup time!' % comma_separated_names
-
-        print(message)
-        return
 
         # Send the standup message.
         connection.privmsg(self.channel, message)
