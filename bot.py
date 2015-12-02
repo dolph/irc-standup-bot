@@ -49,8 +49,7 @@ class StandupBot(irc.client.SimpleIRCClient):
         print('Disconnecting after %d seconds.' % self.standup_duration)
         connection.execute_delayed(
             delay=self.standup_duration,
-            function=connection.quit,
-            arguments=('Standup ended!',))
+            function=connection.quit)
 
     def on_disconnect(self, connection, event):
         """Exit cleanly."""
