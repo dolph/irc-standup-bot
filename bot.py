@@ -149,6 +149,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    # Prefix the channel name with a '#' if it doesn't already have one.
     if not args.channel.startswith('#'):
         args.channel = '#%s' % args.channel
 
