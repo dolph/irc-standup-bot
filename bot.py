@@ -78,6 +78,8 @@ class StandupBot(irc.client.SimpleIRCClient):
 
         # Send the standup message.
         connection.privmsg(self.channel, message)
+        connection.privmsg(self.channel, 'What are you working on today, and '
+                                         'what do you need help with?')
 
         for user in USERS:
             if user not in list_of_names:
