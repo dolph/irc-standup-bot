@@ -102,7 +102,7 @@ class StandupBot(irc.client.SimpleIRCClient):
         list_of_names = event.arguments[-1].split(' ')
 
         # Strip user modes from names.
-        list_of_names = [x.lstrip('@') for x in list_of_names]
+        list_of_names = [x.lstrip('@').lstrip('+') for x in list_of_names]
 
         # Filter list of names for ones we care about.
         list_of_names = [x for x in list_of_names if x in self.users_to_ping]
