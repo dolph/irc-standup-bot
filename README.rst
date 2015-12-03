@@ -26,21 +26,25 @@ Usage
 ::
 
     $ python bot.py --help
-    usage: bot.py [-h] [--port PORT] [--standup-duration STANDUP_DURATION]
-                  server channel nickname nickname-to-ping [nickname-to-ping ...]
+    usage: bot.py [-h] [--port PORT] [--password PASSWORD] [--ssl]
+                [--standup-duration STANDUP_DURATION] [--topic TOPIC]
+                server channel nickname nickname-to-ping [nickname-to-ping ...]
 
     positional arguments:
-      server                The IRC server to connect to.
-      channel               The IRC channel to hold the standup in.
-      nickname              The IRC nickname to use.
-      nickname-to-ping      List of users to ping at the beginning of the standup.
+    server                The IRC server to connect to.
+    channel               The IRC channel to hold the standup in.
+    nickname              The IRC nickname to use.
+    nickname-to-ping      List of users to ping at the beginning of the standup.
 
     optional arguments:
-      -h, --help            show this help message and exit
-      --port PORT           The IRC server's port.
-      --standup-duration STANDUP_DURATION
+    -h, --help            show this help message and exit
+    --port PORT           The IRC server's port.
+    --password PASSWORD   The IRC server's password.
+    --ssl                 The IRC server requires SSL.
+    --standup-duration STANDUP_DURATION
                             Standup duration in seconds (the default is 15
                             minutes).
+    --topic TOPIC         What to invite everyone to
 
 So, you can use cron to schedule a standup every weekday at 17:00 UTC (server
 time) with `dolphm`, `dstanek`, and `lbragstad` on Freenode in the
