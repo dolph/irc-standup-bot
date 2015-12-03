@@ -37,6 +37,9 @@ class StandupBot(irc.client.SimpleIRCClient):
         self.standup_duration = standup_duration
         self.topic = topic
 
+        # We'll use this to track who, of the people we pinged, said anything.
+        self.participants = set()
+
         print('Connecting...')
         self.connect(server, port, nickname)
 
@@ -65,7 +68,16 @@ class StandupBot(irc.client.SimpleIRCClient):
         print('Disconnecting after %d seconds.' % self.standup_duration)
         connection.execute_delayed(
             delay=self.standup_duration,
-            function=connection.quit)
+            function=self.end_standup)
+
+    def end_standup(self):
+        """End the standup by thanking participants."""
+        if self.participants:
+            users_to_thank = ', '.join(sorted(list(self.participants)))
+            self.connection.privmsg(
+                self.channel, 'Thank you, %s!' % users_to_thank)
+
+        self.connection.quit()
 
     def on_disconnect(self, connection, event):
         """Exit cleanly."""
@@ -108,25 +120,9 @@ class StandupBot(irc.client.SimpleIRCClient):
 
     def on_pubmsg(self, connection, event):
         """Do nothing."""
-        print(
-            'Received pubmsg: %s (source=%s, type=%s, target=%s, '
-            'arguments=%s, tags=%s)' % (
-                event.source,
-                event.type,
-                event.target,
-                event.arguments,
-                event.tags))
-
-    def on_privmsg(self, connection, event):
-        """Do nothing."""
-        print(
-            'Received privmsg: %s (source=%s, type=%s, target=%s, '
-            'arguments=%s, tags=%s)' % (
-                event.source,
-                event.type,
-                event.target,
-                event.arguments,
-                event.tags))
+        nickname = event.source.split('!', 1)[0]
+        if nickname in self.users_to_ping:
+            self.participants.add(nickname)
 
 
 if __name__ == "__main__":
