@@ -4,6 +4,10 @@ IRC Standup Bot
 
 A simple script to provide automated cat herding for IRC-based standups.
 
+Schedule the bot to run via a cron job, and it'll connect to your IRC server,
+join the given channel, ping all the meeting attendees (even if they're not in
+the meeting channel), and thank the participants when the meeting is over.
+
 ------------
 Installation
 ------------
