@@ -28,12 +28,14 @@ class StandupBot(irc.client.SimpleIRCClient):
     """
 
     def __init__(self, channel, nickname, server, port=6667,
-                 users_to_ping=None, standup_duration=60 * 15):
+                 users_to_ping=None, standup_duration=60 * 15,
+                 topic='Standup meeting'):
         """Initialize the IRC client."""
         super(StandupBot, self).__init__()
         self.channel = channel
         self.users_to_ping = users_to_ping or []
         self.standup_duration = standup_duration
+        self.topic = topic
 
         print('Connecting...')
         self.connect(server, port, nickname)
@@ -91,9 +93,9 @@ class StandupBot(irc.client.SimpleIRCClient):
         if list_of_names:
             message = ', '.join(sorted(list_of_names))
             message += ': '
-        message += 'Standup time!'
+        message += self.topic
 
-        # Send the standup message.
+        # Send the standup ping.
         connection.privmsg(self.channel, message)
         connection.privmsg(self.channel, 'What are you working on today, and '
                                          'what do you need help with?')
@@ -101,7 +103,8 @@ class StandupBot(irc.client.SimpleIRCClient):
         # Ping the users that are not in the channel privately.
         for user in self.users_to_ping:
             if user not in list_of_names:
-                connection.privmsg(user, 'Standup time in %s' % self.channel)
+                connection.privmsg(
+                    user, '%s in %s' % (self.topic, self.channel))
 
     def on_pubmsg(self, connection, event):
         """Do nothing."""
@@ -147,6 +150,11 @@ if __name__ == "__main__":
         type=int, default=60 * 15,
         help='Standup duration in seconds (the default is 15 minutes).')
 
+    parser.add_argument(
+        '--topic',
+        default='Standup meeting',
+        help='What to invite everyone to')
+
     args = parser.parse_args()
 
     # Prefix the channel name with a '#' if it doesn't already have one.
@@ -159,5 +167,6 @@ if __name__ == "__main__":
         server=args.server,
         port=args.port,
         users_to_ping=args.users_to_ping,
+        topic=args.topic,
         standup_duration=args.standup_duration)
     bot.start()
