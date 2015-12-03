@@ -15,8 +15,10 @@
 """IRC standup bot."""
 
 import argparse
+import ssl
 
 import irc.client
+import irc.connection
 import irc.strings
 
 
@@ -27,8 +29,8 @@ class StandupBot(irc.client.SimpleIRCClient):
 
     """
 
-    def __init__(self, channel, nickname, server, port=6667,
-                 users_to_ping=None, standup_duration=60 * 15,
+    def __init__(self, channel, nickname, server, port=6667, use_ssl=False,
+                 password=None, users_to_ping=None, standup_duration=60 * 15,
                  topic='Standup meeting'):
         """Initialize the IRC client."""
         super(StandupBot, self).__init__()
@@ -41,7 +43,12 @@ class StandupBot(irc.client.SimpleIRCClient):
         self.participants = set()
 
         print('Connecting...')
-        self.connect(server, port, nickname)
+        if use_ssl:
+            connect_factory = irc.connection.Factory(wrapper=ssl.wrap_socket)
+        else:
+            connect_factory = irc.connection.Factory()
+        self.connect(server, port, nickname, password=password,
+                     connect_factory=connect_factory)
 
         # We start the standup as soon as we know who is in the channel. But
         # for some reason, we get two responses when we request the list of
@@ -130,7 +137,13 @@ if __name__ == "__main__":
     parser.add_argument(
         'server', help='The IRC server to connect to.')
     parser.add_argument(
-        '--port', default=6667, help='The IRC server\'s port.')
+        '--port', type=int, default=6667, help='The IRC server\'s port.')
+    parser.add_argument(
+        '--password', help='The IRC server\'s password.')
+    parser.add_argument(
+        '--ssl',
+        action='store_true', default=False,
+        help='The IRC server requires SSL.')
     parser.add_argument(
         'channel', help='The IRC channel to hold the standup in.')
     parser.add_argument(
@@ -162,6 +175,8 @@ if __name__ == "__main__":
         nickname=args.nickname,
         server=args.server,
         port=args.port,
+        password=args.password,
+        use_ssl=args.ssl,
         users_to_ping=args.users_to_ping,
         topic=args.topic,
         standup_duration=args.standup_duration)
