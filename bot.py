@@ -72,7 +72,8 @@ class StandupBot(irc.client.SimpleIRCClient):
             # TODO(dolph): should wait for nickserv response before joining a
             # channel that might require it.
             connection.privmsg(
-                'NickServ', 'IDENTIFY %s %s' % (self.nickname, self.nickserv_password))
+                'NickServ', 'IDENTIFY %s %s' % (
+                    self.nickname, self.nickserv_password))
 
         print('Joining %s...' % self.channel)
         connection.join(self.channel)
