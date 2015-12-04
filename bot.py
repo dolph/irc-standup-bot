@@ -31,13 +31,14 @@ class StandupBot(irc.client.SimpleIRCClient):
 
     def __init__(self, channel, nickname, server, port=6667, use_ssl=False,
                  password=None, users_to_ping=None, standup_duration=60 * 15,
-                 topic='Standup meeting'):
+                 topic='Standup meeting', nickserv_password=None):
         """Initialize the IRC client."""
         super(StandupBot, self).__init__()
         self.channel = channel
         self.users_to_ping = users_to_ping or []
         self.standup_duration = standup_duration
         self.topic = topic
+        self.nickserv_password = nickserv_password
 
         # We'll use this to track who, of the people we pinged, said anything.
         self.participants = set()
@@ -65,6 +66,13 @@ class StandupBot(irc.client.SimpleIRCClient):
 
     def on_welcome(self, connection, event):
         """Handle welcome message from server."""
+        if self.nickserv_password:
+            print('Identifying with NickServ...')
+            # TODO(dolph): should wait for nickserv response before joining a
+            # channel that might require it.
+            connection.privmsg(
+                'nickserv', 'identify %s' % self.nickserv_password)
+
         print('Joining %s...' % self.channel)
         connection.join(self.channel)
 
@@ -148,6 +156,8 @@ if __name__ == "__main__":
         'channel', help='The IRC channel to hold the standup in.')
     parser.add_argument(
         'nickname', help='The IRC nickname to use.')
+    parser.add_argument(
+        '--nickserv-password', help='The NickServ password to use.')
 
     parser.add_argument(
         'users_to_ping',
@@ -173,6 +183,7 @@ if __name__ == "__main__":
     bot = StandupBot(
         channel=args.channel,
         nickname=args.nickname,
+        nickserv_password=args.nickserv_password,
         server=args.server,
         port=args.port,
         password=args.password,
