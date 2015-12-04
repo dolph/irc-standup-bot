@@ -38,6 +38,7 @@ class StandupBot(irc.client.SimpleIRCClient):
         self.users_to_ping = users_to_ping or []
         self.standup_duration = standup_duration
         self.topic = topic
+        self.nickname = nickname
         self.nickserv_password = nickserv_password
 
         # We'll use this to track who, of the people we pinged, said anything.
@@ -71,7 +72,7 @@ class StandupBot(irc.client.SimpleIRCClient):
             # TODO(dolph): should wait for nickserv response before joining a
             # channel that might require it.
             connection.privmsg(
-                'nickserv', 'identify %s' % self.nickserv_password)
+                'NickServ', 'IDENTIFY %s %s' % (self.nickname, self.nickserv_password))
 
         print('Joining %s...' % self.channel)
         connection.join(self.channel)
